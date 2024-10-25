@@ -12,7 +12,7 @@
     "apollo-boost": "^0.4.9",
     "express": "^4.21.1",
     "express-graphql": "^0.12.0",
-    "graphql": "^16.9.0",
+    "graphql": "^15.6.0",
     "lodash": "^4.17.21",
     "react-apollo": "^3.1.5"
   },

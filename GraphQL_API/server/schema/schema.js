@@ -3,6 +3,7 @@ const {
   GraphQLSchema,
   GraphQLString,
   GraphQLInt,
+  GraphQLList,
 } = require("graphql");
 const _ = require("lodash"); // Import lodash
 
@@ -14,6 +15,7 @@ const tasks = [
     weight: 1,
     description:
       "Create your first HTML file 0-index.html with: -Add the doctype on the first line (without any comment) -After the doctype, open and close a html tag Open your file in your browser (the page should be blank)",
+    projectId: "1",
   },
   {
     id: "2",
@@ -21,6 +23,7 @@ const tasks = [
     weight: 1,
     description:
       "Copy the content of 0-index.html into 1-index.html Create the head and body sections inside the html tag, create the head and body tags (empty) in this order",
+    projectId: "1",
   },
 ];
 
@@ -49,6 +52,12 @@ const TaskType = new GraphQLObjectType({
     title: { type: GraphQLString },
     weight: { type: GraphQLInt },
     description: { type: GraphQLString },
+    project: {
+      type: ProjectType,
+      resolve(parent, args) {
+        return _.find(projects, { id: parent.projectId }); // Find project by projectId
+      },
+    },
   }),
 });
 
@@ -60,6 +69,12 @@ const ProjectType = new GraphQLObjectType({
     title: { type: GraphQLString },
     weight: { type: GraphQLInt },
     description: { type: GraphQLString },
+    tasks: {
+      type: GraphQLList(TaskType),
+      resolve(parent, args) {
+        return _.filter(tasks, { projectId: parent.id });
+      },
+    },
   }),
 });
 
@@ -69,16 +84,16 @@ const RootQuery = new GraphQLObjectType({
   fields: {
     task: {
       type: TaskType,
-      args: { id: { type: GraphQLString } }, // Arguments for the query
+      args: { id: { type: GraphQLString } },
       resolve(parent, args) {
-        return _.find(tasks, { id: args.id }); // Use lodash to find the task by ID
+        return _.find(tasks, { id: args.id });
       },
     },
     project: {
       type: ProjectType,
-      args: { id: { type: GraphQLString } }, // Arguments for the query
+      args: { id: { type: GraphQLString } },
       resolve(parent, args) {
-        return _.find(projects, { id: args.id }); // Use lodash to find the project by ID
+        return _.find(projects, { id: args.id });
       },
     },
   },
