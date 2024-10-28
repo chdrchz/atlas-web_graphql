@@ -9,4 +9,4 @@ const projectSchema = new Schema({
   description: { type: String, required: true },
 });
 
-module.exports = mongoose.model("Task", projectSchema);
+module.exports = mongoose.model("Project", projectSchema);

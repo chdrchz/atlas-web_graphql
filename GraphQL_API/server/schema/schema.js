@@ -4,8 +4,12 @@ const {
   GraphQLString,
   GraphQLInt,
   GraphQLList,
+  GraphQLNonNull,
 } = require("graphql");
+
 const _ = require("lodash"); // Import lodash
+const Project = require('../models/project');
+const Task = require('../models/task');
 
 // Sample tasks data
 const tasks = [
@@ -78,6 +82,31 @@ const ProjectType = new GraphQLObjectType({
   }),
 });
 
+// Define Mutation
+const Mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    addProject: {
+      type: ProjectType, // Response obj type
+      args: {
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        weight: { type: new GraphQLNonNull(GraphQLInt) },
+        description: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve(parent, args) {
+        const project = new Project({
+          title: args.title,
+          weight: args.weight,
+          description: args.description,
+        });
+
+        // Save new project to db
+        return project.save();
+      }
+    }
+  }
+});
+
 // Root query
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
@@ -109,4 +138,5 @@ const RootQuery = new GraphQLObjectType({
 // Create the schema
 module.exports = new GraphQLSchema({
   query: RootQuery,
+  mutation: Mutation,
 });
